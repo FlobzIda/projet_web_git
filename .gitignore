@@ -1,0 +1,15 @@
+# Ignorer les dépendances de Node.js
+node_modules/
+
+# Ignorer les environnements virtuels Python
+.venv/
+.env/
+venv/
+
+# Ignorer les fichiers log et temporaires
+*.log
+.DS_Store
+
+# Ignorer les fichiers compilés ou générés
+dist/
+build/
