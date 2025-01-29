@@ -13,3 +13,8 @@ venv/
 # Ignorer les fichiers compilés ou générés
 dist/
 build/
+
+
+
+uploads/
+users_files.json

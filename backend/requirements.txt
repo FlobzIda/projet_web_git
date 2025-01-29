@@ -1,0 +1,9 @@
+xgboost
+uuid
+json
+os
+scikit-learn
+Flask
+Flask-Cors
+pandas
+numpy
