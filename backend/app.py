@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
@@ -34,8 +35,14 @@ def upload_file():
         file.save(file_path)
         app.logger.info(f'File saved at {file_path}')
         global data
-        data['df'] = pd.read_csv(file_path)
-        return jsonify({'columns': data['df'].columns.tolist()})
+        data = pd.read_csv(file_path)
+        print(data.columns.tolist())
+        print(len(data.columns.tolist()))
+        print('\n')
+        quantitative = data.select_dtypes(include=[np.number])
+        print(quantitative.columns.tolist())
+        print(len(quantitative.columns.tolist()))
+        return jsonify({'columns': quantitative.columns.tolist()})
     app.logger.error('File upload failed')
     return jsonify({'error': 'File upload failed'}), 500
 
