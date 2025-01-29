@@ -1,4 +1,8 @@
 <template>
+
+  <Stepper2/>
+
+  <!--
   <v-stepper v-model="step">
     <v-stepper-content step="1">
       <StepOne @uploaded="handleFileUpload" />
@@ -14,13 +18,16 @@
     <v-stepper-content step="3">
       <StepThree :accuracy="accuracy" @train="trainModel" />
     </v-stepper-content>
-  </v-stepper>
+  </v-stepper>-->
 </template>
 
 <script>
 import StepOne from "./components/StepOne.vue";
 import StepTwo from "./components/StepTwo.vue";
 import StepThree from "./components/StepThree.vue";
+
+
+import Stepper2 from "./components/Stepper2.vue";
 
 export default {
   data() {
