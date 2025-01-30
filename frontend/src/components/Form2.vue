@@ -1,31 +1,35 @@
 <template>
-    <v-form v-model="isValid" ref="form2">
+    <v-form v-model="isValid" ref="form">
         <v-container>
             <v-row>
                 <v-col cols="12" md="6">
-                    <v-select multiple clearable :items="columns" 
+                    <v-select multiple clearable :items="columns"
                         label="Sélectionner les colonnes X"
                         v-model="selectedColumnsX"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-select clearable :items="columns" 
-                        label="Sélectionner la colonne Y" 
+                    <v-select clearable :items="columns"
+                        label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
                         :rules="[rules.required]">
                     </v-select>
-                </v-col>    
+                </v-col>
             </v-row>
-            
+            <v-row>
+                <v-col cols="12">
+                    <v-data-table :headers="previewHeaders" :items="preview" item-value="name" class="elevation-1"></v-data-table>
+                </v-col>
+            </v-row>
             <v-btn @click="submitSelection">Confirm Selection</v-btn>
         </v-container>
     </v-form>
-  </template>
-  
-  <script>
-  export default {
-    props: ["columns"],
+</template>
+
+<script>
+export default {
+    props: ["columns", "preview"],
     data() {
         return {
             isValid: false,
@@ -37,19 +41,42 @@
         };
     },
     watch: {
-        isValid(newValue) {
-            this.$emit('form-validation', newValue); // Envoie l'état de validation au parent
+        selectedColumnsX(newVal) {
+            console.log("selectedColumnsX changed:", newVal);
+            this.validateForm();
+        },
+        selectedColumnsY(newVal) {
+            console.log("selectedColumnsY changed:", newVal);
+            this.validateForm();
+        }
+    },
+    computed: {
+        previewHeaders() {
+            return this.preview.length > 0 ? Object.keys(this.preview[0]).map(key => ({ text: key, value: key })) : [];
         }
     },
     methods: {
         submitSelection() {
-            this.$emit("selectedX", this.selectedColumnsX);
-            this.$emit("selectedY", this.selectedColumnsY);
+            this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY);
         },
         async validateForm() {
-            const validation = await this.$refs.form2.validate();
-            return validation.valid;
+            console.log("validateForm()")
+            
+            const valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
+            this.$emit("form2ValidateEmit", valid);
+        },
+
+        handleInput1Change(event) {
+            console.log("handleInput1Change()")
+            this.selectedColumnsX = event;
+            this.validateForm();
+        },
+
+        handleInput2Change(event) {
+            console.log("handleInput2Change()")
+            this.selectedColumnsY = event;
+            this.validateForm();
         }
     }
-  }
-  </script>
+}
+</script>

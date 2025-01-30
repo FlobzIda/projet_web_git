@@ -11,14 +11,38 @@
 <script>
 export default {
     props: {
-        accuracy: {
-            type: Number,
-            default: null, // Définit une valeur par défaut pour éviter une erreur si la prop est absente
+        selectedColumns: {
+            type: Array,
+            default: () => [],
         },
     },
+    data() {
+        return {
+            accuracy: null,
+        };
+    },
     methods: {
-        trainModel() {
-            this.$emit("train");
+        async trainModel() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/train", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ columns: this.selectedColumns })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Model training failed:", errorData);
+                    return;
+                }
+
+                const data = await response.json();
+                this.accuracy = data.accuracy;
+            } catch (error) {
+                console.error("Model training failed:", error);
+            }
         },
     },
 };

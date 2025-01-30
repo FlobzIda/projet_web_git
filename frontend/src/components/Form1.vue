@@ -1,40 +1,38 @@
 <template>
-    <v-form v-model="isValid" ref="form1">
+    <v-form v-model="isValid" ref="form">
       <v-container>
         <v-row>
             <v-col cols="12">
-                <v-file-input label="Upload CSV" accept=".csv" @change="handleFileChange"></v-file-input>
+                <v-file-input clearable label="Upload CSV" 
+                    accept=".csv"
+                    @change="handleFileChange"
+                    :rules="[rules.required]"></v-file-input>
             </v-col>
         </v-row>
       </v-container>
     </v-form>
-  </template>
+</template>
 
 <script>
 export default {
   data() {
       return {
-          isValid: false,
-          file: null,
-          rules: {
-              required: (value) => !!value || 'Ce champ est requis',
-          }
+            isValid: false,
+            file: null,
+            rules: {
+                required: (value) => !!value || 'Ce champ est requis',
+            }
       };
-  },
-  watch: {
-      isValid(newValue) {
-          this.$emit('form-validation', newValue); // Envoie l'état de validation au parent
-      }
   },
   methods: {
     handleFileChange(event) {
         this.file = event.target.files[0];
-        console.log("Selected file:", this.file);
         this.uploadFile();
     },
     async uploadFile() {
         if (!this.file) {
             console.error("No file selected");
+            this.$emit("form1ValidateEmit", false);
             return;
         }
 
@@ -54,17 +52,16 @@ export default {
             }
 
             const data = await response.json();
-            console.log("File uploaded successfully:", data);
-            this.$emit("uploaded", data.columns);
+            this.$emit("uploaded", data);
+            this.$emit("form1ValidateEmit", true);
         } catch (error) {
             console.error("File upload failed:", error);
         }
     },
-
     async validateForm() {
-        const validation = await this.$refs.form1.validate();
-        return validation.valid;
-    },
+        const { valid } = await this.$refs.form.validate();
+        return valid && !!this.file; // Vérifie si le fichier est sélectionné
+    }
   }
 }
 </script>

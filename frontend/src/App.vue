@@ -1,6 +1,6 @@
 <template>
 
-  <Stepper2/>
+  <Stepper2 />
 
   <!--
   <v-stepper v-model="step">
