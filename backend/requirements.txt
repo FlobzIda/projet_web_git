@@ -1,7 +1,4 @@
-xgboost
-uuid
-json
-os
+matplotlib
 scikit-learn
 Flask
 Flask-Cors

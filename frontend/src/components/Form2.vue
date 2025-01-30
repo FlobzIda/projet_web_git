@@ -3,7 +3,10 @@
         <v-container>
             <v-row>
                 <v-col cols="12" md="6">
-                    <v-select multiple clearable :items="columnsForm2"
+                    <v-select
+                        multiple
+                        clearable
+                        :items="availableColumnsX"
                         label="Sélectionner les colonnes X"
                         v-model="selectedColumnsX"
                         @update:modelValue="handleInput1Change"
@@ -11,7 +14,9 @@
                     </v-select>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-select clearable :items="columnsForm2"
+                    <v-select
+                        clearable
+                        :items="availableColumnsY"
                         label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
                         @update:modelValue="handleInput2Change"
@@ -57,6 +62,12 @@ export default {
         };
     },
     computed: {
+        availableColumnsX() {
+            return this.columnsForm2.filter(col => !this.selectedColumnsY.includes(col));
+        },
+        availableColumnsY() {
+            return this.columnsForm2.filter(col => !this.selectedColumnsX.includes(col));
+        },
         previewHeaders() {
             return this.preview.length > 0 ? Object.keys(this.preview[0]).map(key => ({ text: key, value: key })) : [];
         }
@@ -79,7 +90,6 @@ export default {
         },
         async validateForm() {
             console.log("validateForm()")
-
             const valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
             this.$emit("form2ValidateEmit", valid);
         },
