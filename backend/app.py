@@ -199,7 +199,9 @@ def train_model2():
     return jsonify({
         "accuracy": accuracy if is_classification else mse,
         "learning_curve": learning_curve_img,
-        "feature_importance": feature_importance_img
+        "feature_importance": feature_importance_img,
+        "columns_x": columns_x,
+        "column_y": column_y,
     })
 
 def plot_learning_curves(evals_result):
@@ -258,6 +260,62 @@ def train_model():
     accuracy = accuracy_score(y_test, predictions)
 
     return jsonify({"accuracy": accuracy})
+
+
+@app.route("/api/saveModel", methods=["POST"])
+def save_model():
+    try:
+        # Récupérer les données envoyées par le frontend
+        model_data = request.json
+        colX = model_data.get("colX")
+        colY = model_data.get("colY")
+        fileName = model_data.get("fileName")
+        resultat = model_data.get("resultat")
+
+        # Définir le chemin d'enregistrement du fichier
+        file_path = "models_data.json"  # Vous pouvez choisir un autre emplacement et nom de fichier
+
+        # Vérifier si le fichier existe déjà
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as f:
+                all_models = json.load(f)
+        else:
+            all_models = []
+
+        # Ajouter les nouvelles données du modèle
+        model_entry = {
+            "colX": colX,
+            "colY": colY,
+            "fileName": fileName,
+            "resultat": resultat
+        }
+        all_models.append(model_entry)
+
+        # Enregistrer les données dans le fichier
+        with open(file_path, 'w') as f:
+            json.dump(all_models, f, indent=4)
+
+        return jsonify({"message": "Model saved successfully", "status": "success"})
+
+    except Exception as e:
+        return jsonify({"message": f"Error while saving model: {str(e)}", "status": "error"}), 500
+
+@app.route("/api/getModels", methods=["GET"])
+def get_models():
+    try:
+        # Vérifier si le fichier existe
+        file_path = "models_data.json"  # Remplacez par le chemin de votre fichier
+        if not os.path.exists(file_path):
+            return jsonify({"message": "No models found", "status": "error"}), 404
+
+        # Lire les données du fichier
+        with open(file_path, 'r') as f:
+            models_data = json.load(f)
+
+        return jsonify({"models": models_data, "status": "success"})
+
+    except Exception as e:
+        return jsonify({"message": f"Error while retrieving models: {str(e)}", "status": "error"}), 500
 
 
 if __name__ == "__main__":

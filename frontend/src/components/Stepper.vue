@@ -5,16 +5,19 @@
         hide-actions
         prev-text=""
         next-text=""
-        :items="['Téléchargement du dataset', 'Sélection des colonnes', 'Visualisation']"
+        :items="['Téléchargement du dataset', 'Sélection des colonnes', 'Visualisation', 'Liste des modèles']"
     >
         <template v-slot:item.1>
             <v-card title="Téléchargement du dataset" flat>
-            <Form1 ref="form1" @uploaded="handleFileUpload" @form1ValidateEmit="form1ValideFonc" @fileName="fileNameEmit"></Form1>
-                <v-col cols="12">
-                    <div class="text-end">
-                        <v-btn color="primary" @click="validateStep(2)" v-if="form1Valid">Suivant</v-btn>
-                    </div>
-                </v-col>
+                <Form1 ref="form1" @uploaded="handleFileUpload" @form1ValidateEmit="form1ValideFonc" @fileName="fileNameEmit"></Form1>
+                <v-row cols="12" justify="space-between">
+                    <v-col cols="auto">
+                        <v-btn color="secondary" @click="goToStep(4)">Voir tout les modèles</v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="primary" @click="goToStep(2)" v-if="form1Valid">Configuer</v-btn>
+                    </v-col>
+                </v-row>
             </v-card>
         </template>
 
@@ -23,10 +26,10 @@
                 <Form2 ref="form2" :fileName="fileName" :columnsForm2="columns" :preview="preview" @selected="handleColumnsSelected" @form2ValidateEmit="form2ValideFonc"></Form2>
                 <v-row cols="12" justify="space-between">
                     <v-col cols="auto">
-                        <v-btn color="secondary" @click="previousStep(1)">Précédent</v-btn>
+                        <v-btn color="secondary" @click="goToStep(1)">Précédent</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="validateStep(3); submitForm()" v-if="form2Valid">Suivant</v-btn>
+                        <v-btn color="primary" @click="goToStep(3); submitForm()" v-if="form2Valid">Tester</v-btn>
                     </v-col>
                 </v-row>
             </v-card>
@@ -35,11 +38,28 @@
         <template v-slot:item.3>
             <v-card title="Visualisation" flat>
                 <Form3 ref="form3" :visuel="resultat"></Form3>
-                <v-col cols="12">
-                    <div class="text-start">
-                        <v-btn color="secondary" @click="previousStep(2)">Précédent</v-btn>
-                    </div>
-                </v-col>
+                <v-row cols="12"  justify="space-between">
+                    <v-col cols="auto">
+                        <v-btn color="secondary" @click="goToStep(2)">Précédent</v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="primary" @click="enregistrementModel()">Enregistrer</v-btn>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </template>
+
+        <template v-slot:item.4>
+            <v-card title="Enregistrement" flat>
+                <Form4 ref="form3"></Form4>
+                <v-row cols="12"  justify="space-between">
+                    <v-col cols="auto">
+                        <v-btn color="secondary" @click="goToStep(3)">Précédent</v-btn>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn color="primary" @click="goToStep(1)">Nouveau Model</v-btn>
+                    </v-col>
+                </v-row>
             </v-card>
         </template>
     </v-stepper>
@@ -49,6 +69,7 @@
 import Form1 from './Form1.vue';
 import Form2 from './Form2.vue';
 import Form3 from './Form3.vue';
+import Form4 from './Form4.vue';
 
 export default {
     data() {
@@ -95,11 +116,7 @@ export default {
                 console.error("Column selection failed:", error);
             }
         },
-        async validateStep(nextStep) {
-            
-            this.activeStep = nextStep;
-        },
-        async previousStep(nextStep) {
+        async goToStep(nextStep) {
             this.activeStep = nextStep;
         },
         
@@ -147,6 +164,33 @@ export default {
             } catch (error) {
                 console.error("model trained failed:", error);
             }
+        },
+
+        enregistrementModel() {
+            // Envoi des données du modèle au backend pour l'enregistrement
+            const modelData = {
+                colX: this.colX,
+                colY: this.colY,
+                fileName: this.fileName,
+                resultat: this.resultat
+            };
+
+            fetch('/api/saveModel', {
+                method: 'POST',
+                body: JSON.stringify(modelData),
+                headers: {
+                'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Model saved successfully', data);
+                this.goToStep(4); 
+                // Vous pouvez ajouter des actions comme afficher un message de succès
+            })
+            .catch(error => {
+                console.error('Error while saving model:', error);
+            });
         }
     },
     components: {Form1, Form2, Form3}
