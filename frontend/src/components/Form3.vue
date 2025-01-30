@@ -24,28 +24,6 @@ export default {
         };
     },
     methods: {
-        async trainModel() {
-            try {
-                const response = await fetch("/api/trainModel", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ columns: this.selectedColumns })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error("Model training failed:", errorData);
-                    return;
-                }
-
-                const data = await response.json();
-                this.accuracy = data.accuracy;
-            } catch (error) {
-                console.error("Model training failed:", error);
-            }
-        },
     },
 };
 </script>

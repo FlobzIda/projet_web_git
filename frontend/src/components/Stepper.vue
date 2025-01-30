@@ -29,7 +29,7 @@
                         <v-btn color="secondary" @click="goToStep(1)">Précédent</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="goToStep(3); submitForm()" v-if="form2Valid">Tester</v-btn>
+                        <v-btn color="primary" @click="submitForm()" v-if="form2Valid">Tester</v-btn>
                     </v-col>
                 </v-row>
             </v-card>
@@ -94,27 +94,6 @@ export default {
         async handleColumnsSelected(columnsX, columnY) {
             this.colX = columnsX;
             this.colY = columnY;
-            try {
-                const response = await fetch("/api/select_columns", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ columnsX: columnsX, columnY: columnY })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error("Column selection failed:", errorData);
-                    return;
-                }
-
-                const data = await response.json();
-                this.dataViz = data;
-                console.log("Columns selected successfully:", data);
-            } catch (error) {
-                console.error("Column selection failed:", error);
-            }
         },
         async goToStep(nextStep) {
             this.activeStep = nextStep;
@@ -137,6 +116,31 @@ export default {
 
         async submitForm() {
             try {
+                const response = await fetch("/api/select_columns", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ columnsX: this.colX, columnY: this.colY })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Column selection failed:", errorData);
+                    return;
+                }
+
+                const data = await response.json();
+                this.dataViz = data;
+                console.log("Columns selected successfully:", data);
+                this.trainModel()
+            } catch (error) {
+                console.error("Column selection failed:", error);
+            }
+        },
+
+        async trainModel() {
+            try {
                 const response = await fetch("/api/trainModel", {
                     method: "POST",
                     headers: {
@@ -157,7 +161,8 @@ export default {
 
                 if (response.ok) {
                     this.resultat = await response.json();
-                    console.log("Model Trained successfully:", data);
+                    console.log("Model Trained successfully:", this.resultat);
+                    this.goToStep(3);
                 } else {
                     console.error("HTTP Error:", response.status);
                 }

@@ -33,9 +33,6 @@
                     <v-data-table :headers="previewHeaders" :items="preview" item-value="name" class="elevation-1"></v-data-table>
                 </v-col>
             </v-row>
-            <div class="text-center" >
-                <v-btn @click="submitSelection" items="fileName">Confirm Selection</v-btn>
-            </div>
             
             <div class="text-center" >
                 <p class="text-error">{{ this.errorForm2Txt }}</p>
@@ -72,14 +69,6 @@ export default {
         }
     },
     methods: {
-        submitSelection() {
-            console.log("submitSelection(items)")
-
-            // Si la saise n'est pas bonne on ne lance pas le emit
-            if(this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0)
-                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
-        },
-
 
         // Changement des valeurs des selects
         handleInput1Change(newValue) {
@@ -96,6 +85,8 @@ export default {
             console.log("validateForm()")
             let valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
             this.$emit("form2ValidateEmit", valid);
+            if (valid)
+                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY, this.fileName);
         },
 
 

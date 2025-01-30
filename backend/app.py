@@ -107,8 +107,6 @@ def select_columns():
 @app.route("/api/trainModel", methods=["POST"])
 def train_model2():
     
-    global data
-    
     file_name = request.json['filename']
     columns_x = request.json['colsX']
     column_y = request.json['colY']
@@ -240,26 +238,26 @@ def plot_feature_importance(model):
 
     return img_base64
 
-@app.route("/api/train", methods=["POST"])
-def train_model():
-    global data
-    selected_columns = request.json["columns"]
-    df = data[selected_columns]
-    X = df.iloc[:, :-1]
-    y = df.iloc[:, -1]
+# @app.route("/api/train", methods=["POST"])
+# def train_model():
+#     global data
+#     selected_columns = request.json["columns"]
+#     df = data[selected_columns]
+#     X = df.iloc[:, :-1]
+#     y = df.iloc[:, -1]
 
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
+#     le = LabelEncoder()
+#     y_encoded = le.fit_transform(y)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y_encoded, test_size=0.2, random_state=42
-    )
-    model = XGBClassifier()
-    model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
+#     X_train, X_test, y_train, y_test = train_test_split(
+#         X, y_encoded, test_size=0.2, random_state=42
+#     )
+#     model = XGBClassifier()
+#     model.fit(X_train, y_train)
+#     predictions = model.predict(X_test)
+#     accuracy = accuracy_score(y_test, predictions)
 
-    return jsonify({"accuracy": accuracy})
+#     return jsonify({"accuracy": accuracy})
 
 
 @app.route("/api/saveModel", methods=["POST"])
