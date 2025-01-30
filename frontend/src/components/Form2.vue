@@ -1,7 +1,6 @@
 <template>
     <v-form v-model="isValid" ref="form">
         <v-container>
-            
             <v-row>
                 <v-col cols="12" md="6">
                     <v-select multiple clearable :items="columnsForm2"
@@ -20,12 +19,23 @@
                     </v-select>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row class="mb-10">
                 <v-col cols="12">
+                    <div class="text-center" >
+                        <v-btn @click="displayPreviewFunc">{{ displayPreviewTxt }}</v-btn>
+                    </div>
+                </v-col>
+                <v-col cols="12" v-if="displayPreview">
                     <v-data-table :headers="previewHeaders" :items="preview" item-value="name" class="elevation-1"></v-data-table>
                 </v-col>
             </v-row>
-            <v-btn @click="submitSelection" items="fileName">Confirm Selection</v-btn>
+            <div class="text-center" >
+                <v-btn @click="submitSelection" items="fileName">Confirm Selection</v-btn>
+            </div>
+            
+            <div class="text-center" >
+                <p class="text-error">{{ this.errorForm2Txt }}</p>
+            </div>
         </v-container>
     </v-form>
 </template>
@@ -38,20 +48,13 @@ export default {
             isValid: false,
             selectedColumnsX: [],
             selectedColumnsY: [],
+            errorForm2Txt: "",
+            displayPreview: false,
+            displayPreviewTxt: "Afficher la preview",
             rules: {
                 required: (value) => !!value || 'Ce champ est requis',
             }
         };
-    },
-    watch: {
-        selectedColumnsX(newVal) {
-            console.log("selectedColumnsX changed:", newVal);
-            this.validateForm();
-        },
-        selectedColumnsY(newVal) {
-            console.log("selectedColumnsY changed:", newVal);
-            this.validateForm();
-        }
     },
     computed: {
         previewHeaders() {
@@ -61,7 +64,19 @@ export default {
     methods: {
         submitSelection(items) {
             this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
-            },
+        },
+
+        // Changement des valeurs des selects
+        handleInput1Change(event) {
+            console.log("handleInput1Change()")
+            this.selectedColumnsX = event;
+            this.validateForm();
+        },
+        handleInput2Change(event) {
+            console.log("handleInput2Change()")
+            this.selectedColumnsY = event;
+            this.validateForm();
+        },
         async validateForm() {
             console.log("validateForm()")
 
@@ -69,16 +84,14 @@ export default {
             this.$emit("form2ValidateEmit", valid);
         },
 
-        handleInput1Change(event) {
-            console.log("handleInput1Change()")
-            this.selectedColumnsX = event;
-            this.validateForm();
-        },
-
-        handleInput2Change(event) {
-            console.log("handleInput2Change()")
-            this.selectedColumnsY = event;
-            this.validateForm();
+        // Affiche ou chache la preview
+        displayPreviewFunc() {
+            if(this.displayPreview)
+                this.displayPreviewTxt = "Afficher la preview";
+            else
+                this.displayPreviewTxt = "Cacher la preview";
+            
+            this.displayPreview = !this.displayPreview;
         }
     }
 }

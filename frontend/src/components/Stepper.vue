@@ -1,10 +1,11 @@
 <template>
     <v-stepper
         v-model="activeStep"
+        alt-labels
         hide-actions
         prev-text=""
         next-text=""
-        :items="['Step 1', 'Step 2', 'Step 3']"
+        :items="['Téléchargement du dataset', 'Sélection des colonnes', 'Visualisation']"
     >
         <template v-slot:item.1>
             <v-card title="Téléchargement du dataset" flat>

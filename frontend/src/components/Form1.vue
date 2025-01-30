@@ -3,12 +3,17 @@
       <v-container>
         <v-row>
             <v-col cols="12">
-                <v-file-input clearable label="Upload CSV" 
+                <v-file-input 
+                    label="Upload CSV" 
                     accept=".csv"
                     @change="handleFileChange"
-                    :rules="[rules.required]"></v-file-input>
+                    :rules="[rules.required]">
+                </v-file-input>
             </v-col>
         </v-row>
+        <div class="text-center" >
+            <p class="text-error">{{ this.errorForm1Txt }}</p>
+        </div>
       </v-container>
     </v-form>
 </template>
@@ -19,6 +24,7 @@ export default {
       return {
             isValid: false,
             file: null,
+            errorForm1Txt: "",
             rules: {
                 required: (value) => !!value || 'Ce champ est requis',
             }
@@ -27,12 +33,15 @@ export default {
   methods: {
     handleFileChange(event) {
         this.file = event.target.files[0];
+        if(!this.file) {
+            this.errorForm1Txt = "La saisie n'est pas bonne ou le format du fichier n'est pas un csv"
+        }
+        console.log("Un nouveau fichier est saisie.");
         this.uploadFile();
     },
     async uploadFile() {
         if (!this.file) {
             console.error("No file selected");
-            this.$emit("form1ValidateEmit", false);
             return;
         }
 
@@ -52,17 +61,13 @@ export default {
             }
 
             const data = await response.json();
-            console.log(data)
+            //console.log(data)
             this.$emit("uploaded", data);
             this.$emit("form1ValidateEmit", true);
         } catch (error) {
             console.error("File upload failed:", error);
         }
     },
-    async validateForm() {
-        const { valid } = await this.$refs.form.validate();
-        return valid && !!this.file; // Vérifie si le fichier est sélectionné
-    }
 }
 }
 </script>
