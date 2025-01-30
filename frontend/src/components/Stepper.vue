@@ -8,7 +8,7 @@
     >
         <template v-slot:item.1>
             <v-card title="Téléchargement du dataset" flat>
-                <Form1 ref="form1" @uploaded="handleFileUpload" @form1ValidateEmit="form1ValideFonc"></Form1>
+            <Form1 ref="form1" @uploaded="handleFileUpload" @form1ValidateEmit="form1ValideFonc" @fileName="fileNameEmit"></Form1>
                 <v-col cols="12">
                     <div class="text-end">
                         <v-btn color="primary" @click="validateStep(2)" v-if="form1Valid">Suivant</v-btn>
@@ -19,7 +19,7 @@
 
         <template v-slot:item.2>
             <v-card title="Sélection des colonnes" flat>
-                <Form2 ref="form2" :columns="columns" :preview="preview" @selected="handleColumnsSelected" @form2ValidateEmit="form2ValideFonc"></Form2>
+                <Form2 ref="form2" :fileName="fileName" :columnsForm2="columns" :preview="preview" @selected="handleColumnsSelected" @form2ValidateEmit="form2ValideFonc"></Form2>
                 <v-row cols="12" justify="space-between">
                     <v-col cols="auto">
                         <v-btn color="secondary" @click="previousStep(1)">Précédent</v-btn>
@@ -57,12 +57,14 @@ export default {
             preview: [],
             form1Valid: false,
             form2Valid: false,
+            fileName: "",
         };
     },
     methods: {
         handleFileUpload(data) {
             this.columns = data.columns;
             this.preview = data.preview;
+            this.fileName = data.fileName;
         },
         async handleColumnsSelected(columnsX, columnY) {
             try {
@@ -121,8 +123,12 @@ export default {
         form2ValideFonc(isValidForm) {
             this.form2Valid = isValidForm
             console.log("form2ValideFonc", this.form2Valid)
+        },
+
+        fileNameEmit(isValidForm) {
+            this.fileName = isValidForm
+            console.log("fileNameEmit", this.fileName)
         }
-    },
-  components: {Form1, Form2, Form3},
+    }
 }
 </script>
