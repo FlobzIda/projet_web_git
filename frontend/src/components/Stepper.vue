@@ -193,6 +193,6 @@ export default {
             });
         }
     },
-    components: {Form1, Form2, Form3}
+    components: {Form1, Form2, Form3, Form4}
 }
 </script>
