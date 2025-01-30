@@ -10,7 +10,7 @@
                 </v-card-title>
 
                 <v-card-subtitle>
-                    Accuracity : {{ model.resultat.accuracy }}
+                    Accuracy : {{ model.resultat.accuracy }}
                 </v-card-subtitle>
 
                 <div class="pa-5">

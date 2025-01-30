@@ -12,7 +12,7 @@
                 <Form1 ref="form1" @uploaded="handleFileUpload" @form1ValidateEmit="form1ValideFonc" @fileName="fileNameEmit"></Form1>
                 <v-row cols="12" justify="space-between">
                     <v-col cols="auto">
-                        <v-btn color="secondary" @click="goToStep(4)">Voir tout les modèles</v-btn>
+                        <v-btn color="secondary" @click="goToStep(4)">Voir tous les modèles</v-btn>
                     </v-col>
                     <v-col cols="auto">
                         <v-btn color="primary" @click="goToStep(2)" v-if="form1Valid">Configuer</v-btn>
@@ -57,7 +57,7 @@
                         <v-btn color="secondary" @click="goToStep(3)">Précédent</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="goToStep(1)">Nouveau Model</v-btn>
+                        <v-btn color="primary" @click="goToStep(1)">Nouveau Modèle</v-btn>
                     </v-col>
                 </v-row>
             </v-card>
@@ -198,6 +198,6 @@ export default {
             });
         }
     },
-    components: {Form1, Form2, Form3}
+    components: {Form1, Form2, Form3, Form4}
 }
 </script>
