@@ -91,25 +91,6 @@ export default {
         async validateStep(nextStep) {
             
             this.activeStep = nextStep;
-
-            // let isValid = false;
-
-            // if (nextStep === 2 && this.$refs.form1) {
-            //     isValid = await this.$refs.form1.validateForm();
-            //     console.log("form1Valid", isValid)
-            //     this.form1Valid = isValid;
-            // } else if (nextStep === 3 && this.$refs.form2) {
-            //     isValid = await this.$refs.form2.validateForm();
-            //     console.log("form2Valid", isValid)
-            //     this.form2Valid = isValid;
-            // }
-
-            // if (isValid) {
-            //     console.log('Form valide')
-            //     this.activeStep = nextStep;
-            // } else {
-            //     console.log('Formulaire invalide, actions cachées.');
-            // }
         },
         async previousStep(nextStep) {
             this.activeStep = nextStep;
@@ -129,6 +110,7 @@ export default {
             this.fileName = isValidForm
             console.log("fileNameEmit", this.fileName)
         }
-    }
+    },
+    components: {Form1, Form2, Form3}
 }
 </script>
