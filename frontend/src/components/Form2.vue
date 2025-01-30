@@ -61,7 +61,7 @@ export default {
         },
         async validateForm() {
             console.log("validateForm()")
-            
+
             const valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
             this.$emit("form2ValidateEmit", valid);
         },

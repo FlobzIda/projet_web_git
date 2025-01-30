@@ -19,14 +19,17 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-data = {}
-
 USERS_FILES_JSON = 'users_files.json'
+
+if not os.path.exists(USERS_FILES_JSON):
+    os.makedirs(USERS_FILES_JSON)
+
+data = {}
 
 def save_file_mapping(original_filename, new_filename):
     file_mappings = {}
 
-    if os.path.exists(USERS_FILES_JSON) and os.path.getsize(USERS_FILES_JSON) > 0:
+    if os.path.getsize(USERS_FILES_JSON) > 0:
         try:
             with open(USERS_FILES_JSON, 'r') as f:
                 file_mappings = json.load(f)
