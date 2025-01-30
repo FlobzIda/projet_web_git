@@ -27,6 +27,7 @@ export default {
             try {
                 const response = await fetch("http://127.0.0.1:5000/upload", {
                     method: "POST",
+                    mode: "no-cors",
                     body: formData,
                 });
 
@@ -38,7 +39,7 @@ export default {
 
                 const data = await response.json();
                 console.log("File uploaded successfully:", data);
-                this.$emit("uploaded", data.columns);
+                this.$emit("uploaded", data.columns, data.file);
             } catch (error) {
                 console.error("File upload failed:", error);
             }

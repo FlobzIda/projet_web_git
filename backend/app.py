@@ -9,6 +9,9 @@ from xgboost import XGBClassifier
 import os
 import uuid
 import json
+import xgboost as xgb
+from sklearn.metrics import accuracy_score, mean_squared_error
+import matplotlib.pyplot as plt
 
 
 app = Flask(__name__)
@@ -66,13 +69,8 @@ def upload_file():
         try:
             global data
             data = pd.read_csv(file_path)
-            print(data.columns.tolist())
-            print(len(data.columns.tolist()))
-            print('\n')
             quantitative = data.select_dtypes(include=[np.number])
-            print(quantitative.columns.tolist())
-            print(len(quantitative.columns.tolist()))
-            return jsonify({'columns': quantitative.columns.tolist()})
+            return jsonify({'columns': quantitative.columns.tolist(), 'fileName':file_path})
         except Exception as e:
             app.logger.error(f'Error processing file: {str(e)}')
             return jsonify({'error': 'Error processing file'}), 500
@@ -80,25 +78,21 @@ def upload_file():
     app.logger.error('File upload failed')
     return jsonify({'error': 'File upload failed'}), 500
 
-@app.route('/train', methods=['POST'])
+@app.route('/train', methods=['GET'])
 def train_model():
-    global data
-    selected_columns = request.json['columns']
-    df = data['df'][selected_columns]
-    X = df.iloc[:, :-1]
-    y = df.iloc[:, -1]
+    file_name = request.args.get('filename')
+    cols_x = request.args.get('colsX')
+    columns_x = cols_x.split(",")
+    col_y = request.args.get('colY')
+    column_y = str(col_y)
 
-    # Encode the target variable
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
+    print("---------------------------")
+    print('\n')
+    print(file_name," : ",columns_x," - ",column_y)
+    print('\n')
+    print("---------------------------")
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
-    model = XGBClassifier()
-    model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
-
-    return jsonify({'accuracy': accuracy})
+    return jsonify({"message": "Données préparées avec succès"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

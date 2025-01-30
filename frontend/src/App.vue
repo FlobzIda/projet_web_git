@@ -6,7 +6,8 @@
     </v-stepper-content>
 
     <v-stepper-content step="2">
-      <StepTwo :columns="columns" @selected="handleColumnsSelected" />
+      <StepTwo :columns="columns" :fileName="fileName" @selected="handleColumnsSelected" />
+
       <v-btn @click="goToStep(3)"
         :disabled="columns.length === 0 || (selectedColumnsX.length === 0 && selectedColumnsY.length === 0)">Next</v-btn>
     </v-stepper-content>
@@ -29,13 +30,16 @@ export default {
       columns: [], // Colonnes reçues après upload
       selectedColumnsX: [], // Colonnes sélectionnées
       selectedColumnsY: [], // Colonnes sélectionnées
+      fileName: '', //nom du fichier 
       accuracy: null, // Résultat du modèle
     };
   },
   methods: {
-    handleFileUpload(columns) {
-      console.log("Received columns:", columns); // Vérifiez si cela est déclenché
-      this.columns = columns; // Stockez les colonnes
+    handleFileUpload(columns, fileName) {
+    console.log("Received columns:", columns);
+    console.log("Received FileName:", fileName);
+    this.columns = columns;
+    this.fileName = fileName; // Stocke bien le nom du fichier
     },
     handleColumnsSelected(selectedColumnsX, selectedColumnsY) {
       this.selectedColumnsX = selectedColumnsX; // Stockez les colonnes sélectionnées
