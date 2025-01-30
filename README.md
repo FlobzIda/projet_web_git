@@ -11,3 +11,15 @@ git add . \
 git commit -m "[commentaire]" \
 git push \
 git pull
+
+# Lancement projet
+## Backend
+
+cd .\backend\ \
+.\env\Scripts\activate \
+python .\app.py
+
+## Frontend
+
+cd .\frontend\ \
+npm run dev
