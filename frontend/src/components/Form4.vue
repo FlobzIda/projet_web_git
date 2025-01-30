@@ -1,7 +1,7 @@
 <template>
-    <v-row justify="space-between" v-if="models.length > 0">
-        <v-col cols="auto" justify="center" v-for="(model, index) in models" :key="index">
-            <v-card class="mx-auto" max-width="344">
+    <v-row justify="center" v-if="models.length > 0">
+        <v-col cols="auto" v-for="(model, index) in models" :key="index">
+            <v-card class="mx-auto" width="300">
                  <v-img height="200px" cover
                  :src="'data:image/png;base64,' + model.resultat.learning_curve" alt="Learning Curve" >
                 </v-img>
