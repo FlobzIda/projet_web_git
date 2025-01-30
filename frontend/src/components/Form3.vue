@@ -20,7 +20,7 @@ export default {
     methods: {
         async trainModel() {
             try {
-                const response = await fetch("/api/train", {
+                const response = await fetch("/api/trainModel", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

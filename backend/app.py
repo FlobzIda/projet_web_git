@@ -3,9 +3,11 @@ from flask_cors import CORS
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.preprocessing import LabelEncoder
+import xgboost as xgb
 from xgboost import XGBClassifier
+import matplotlib.pyplot as plt
 import os
 import uuid
 import json
@@ -20,10 +22,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-data = {}
-
 USERS_FILES_JSON = "users_files.json"
-
 
 if not os.path.exists(USERS_FILES_JSON):
     os.makedirs(USERS_FILES_JSON)
@@ -104,20 +103,22 @@ def select_columns():
 
 
 @app.route("/api/trainModel", methods=["POST"])
-def trainModel():
-    data = request.get_json()  # Récupérer les données JSON du corps de la requête
-
-    file_name = data.get("filename")
-    cols_x = data.get("colsX")
-    column_x = cols_x.split(
-        ","
-    )  # Assurez-vous que colsX est une chaîne, et séparez-la en une liste
-    col_y = data.get("colY")
-    column_y = str(col_y)
+def train_model2():
+    
+    global data
+    
+    file_name = request.json['filename']
+    columns_x = request.json['colsX']
+    column_y = request.json['colY']
+    # cols_x = request.json['colsX']
+    # columns_x = cols_x.split(",")  # Assurez-vous que colsX est une chaîne, et séparez-la en une liste
+    # col_y = request.json['colY']
+    # column_y = str(col_y)
+    # file_name = request.json['filename']
 
     print("---------------------------")
     print("\n")
-    print(file_name, " : ", column_x, " - ", column_y)
+    print("Information :", file_name, " : ", columns_x, " - ", column_y)
     print("\n")
     print("---------------------------")
 
@@ -131,21 +132,23 @@ def trainModel():
 
     print("--- debut select_target_column ---")
     # Création de X et Y
+    # Création de X et Y
     x = df[columns_x]
-    print(column_y)
-    y = list(df[column_y])
+    y = df[column_y].squeeze()  # Assure que y est bien une Series
 
     # Détecter si le problème est une classification
-    is_classification = y.nunique() <= 10
+    is_classification = y.nunique() <= 10  
 
     # Encoder les classes si nécessaire
     if is_classification and y.dtype == "object":
         y = y.astype("category").cat.codes
+
+
     print("--- fin select_target_column ---")
 
     print("--- debut split_data ---")
     X_train, X_test, y_train, y_test = train_test_split(
-        x, y, test_size=0.2, random_state=42
+        x, y, test_size=0.2, random_state=18
     )
     print("--- fin split_data ---")
 

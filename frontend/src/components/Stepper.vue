@@ -119,24 +119,30 @@ export default {
 
         async submitForm() {
             try {
-                const response = await fetch("/api/train", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"  // Indique que le corps est en JSON
-                },
-                body: JSON.stringify({
-                    filename: this.fileName,
-                    colsX: [this.colX],
-                    colY: [this.colY]
-                })
-            });
+                const response = await fetch("/api/trainModel", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"  // Indique que le corps est en JSON
+                    },
+                    body: JSON.stringify({
+                        filename: this.fileName,
+                        colsX: this.colX,
+                        colY: this.colY
+                    })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Model Trained successfully:", data);
-            } else {
-                console.error("HTTP Error:", response.status);
-            }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Error model :", errorData);
+                    return;
+                }
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Model Trained successfully:", data);
+                } else {
+                    console.error("HTTP Error:", response.status);
+                }
             } catch (error) {
                 console.error("model trained failed:", error);
             }
