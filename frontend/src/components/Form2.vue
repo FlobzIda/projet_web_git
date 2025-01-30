@@ -1,16 +1,17 @@
 <template>
     <v-form v-model="isValid" ref="form">
         <v-container>
+            
             <v-row>
                 <v-col cols="12" md="6">
-                    <v-select multiple clearable :items="columns"
+                    <v-select multiple clearable :items="columnsForm2"
                         label="Sélectionner les colonnes X"
                         v-model="selectedColumnsX"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-select clearable :items="columns"
+                    <v-select clearable :items="columnsForm2"
                         label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
                         :rules="[rules.required]">
@@ -22,14 +23,15 @@
                     <v-data-table :headers="previewHeaders" :items="preview" item-value="name" class="elevation-1"></v-data-table>
                 </v-col>
             </v-row>
-            <v-btn @click="submitSelection">Confirm Selection</v-btn>
+            <v-btn @click="submitSelection" items="fileName">Confirm Selection</v-btn>
         </v-container>
+        <p>{{ fileName }}</p>
     </v-form>
 </template>
 
 <script>
 export default {
-    props: ["columns", "preview"],
+    props: ["columnsForm2", "preview", "fileName"],
     data() {
         return {
             isValid: false,
@@ -47,6 +49,7 @@ export default {
         },
         selectedColumnsY(newVal) {
             console.log("selectedColumnsY changed:", newVal);
+            console.log(this.fileName)
             this.validateForm();
         }
     },
@@ -56,9 +59,10 @@ export default {
         }
     },
     methods: {
-        submitSelection() {
-            this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY);
-        },
+        submitSelection(items) {
+            console.log('affiche le nom 2',this.fileName)
+            this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
+            },
         async validateForm() {
             console.log("validateForm()")
             

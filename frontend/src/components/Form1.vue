@@ -52,6 +52,7 @@ export default {
             }
 
             const data = await response.json();
+            console.log(data)
             this.$emit("uploaded", data);
             this.$emit("form1ValidateEmit", true);
         } catch (error) {
@@ -62,6 +63,6 @@ export default {
         const { valid } = await this.$refs.form.validate();
         return valid && !!this.file; // Vérifie si le fichier est sélectionné
     }
-  }
+}
 }
 </script>
