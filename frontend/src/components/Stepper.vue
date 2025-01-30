@@ -82,7 +82,12 @@ export default {
             form1Valid: false,  // formulaire 1 valide
             form2Valid: false,  // formulaire 2 valide
             fileName: "",       // nom du fichier
-            resultat: {},        // resultat du l'entrainement
+            resultat: {},       // resultat du l'entrainement
+            randomState : 0,
+            testSize : 0,
+            learningRate : 0,
+            maxDepth : 0,
+
         };
     },
     methods: {
@@ -91,9 +96,13 @@ export default {
             this.preview = data.preview;
             this.fileName = data.fileName;
         },
-        async handleColumnsSelected(columnsX, columnY) {
+        async handleColumnsSelected(columnsX, columnY,randomState,testSize,learningRate,maxDepth) {
             this.colX = columnsX;
             this.colY = columnY;
+            this.randomState = randomState;
+            this.testSize = testSize;
+            this.learningRate = learningRate;
+            this.maxDepth = maxDepth;
             try {
                 const response = await fetch("/api/select_columns", {
                     method: "POST",
@@ -145,7 +154,11 @@ export default {
                     body: JSON.stringify({
                         filename: this.fileName,
                         colsX: this.colX,
-                        colY: this.colY
+                        colY: this.colY,
+                        randomState : this.randomState,
+                        testSize: this.testSize,
+                        learningRate: this.learningRate,
+                        maxDepth:this.maxDepth,
                     })
                 });
 

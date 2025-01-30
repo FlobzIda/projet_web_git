@@ -22,6 +22,26 @@
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
+                <v-text-field
+                    label="Saisir un randomState"
+                    type="number"
+                    v-model="randomState"
+                />
+                <v-select
+                label="Choisir un testSize"
+                :items="[0.1, 0.15, 0.2, 0.25, 0.3]"
+                v-model="testSize"
+                />
+                <v-select
+                label="Choisir un learningRate"
+                :items="[0.1, 0.01, 0.001, 0.0001, 0.00001, 0.00000000000001]"
+                v-model="learningRate"
+                />
+                <v-text-field
+                    label="Saisir un maxDepth"
+                    type="number"
+                    v-model="maxDepth"
+                />
             </v-row>
             <v-row class="mb-10">
                 <v-col cols="12">
@@ -52,6 +72,10 @@ export default {
             isValid: false,
             selectedColumnsX: [],
             selectedColumnsY: [],
+            randomState : 31,   //Random state défault = 31 RPZ a la vie a la mort
+            testSize : 0.2,     //20 % de test size par défault
+            learningRate : 0.01,//0.01 de learning rate de base
+            maxDepth : 6,       //Celui la c'est 6 au pif
             errorForm2Txt: "",
             displayPreview: false,
             displayPreviewTxt: "Afficher la preview",
@@ -77,8 +101,8 @@ export default {
 
             // Si la saise n'est pas bonne on ne lance pas le emit
             if(this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0)
-                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
-        },
+                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.randomState, this.testSize, this.learningRate, this.maxDepth);
+            },
 
 
         // Changement des valeurs des selects
