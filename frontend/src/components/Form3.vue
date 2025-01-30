@@ -1,10 +1,13 @@
 <template>
     <div>
-        <v-btn color="primary" @click="trainModel">Train Model</v-btn>
+        <!-- <v-btn color="primary" @click="trainModel">Train Model</v-btn>-->
         <div v-if="accuracy !== null">
-            <h3>Model Accuracy:</h3>
-            <p>{{ accuracy }}</p>
-            <p>{{ visuel }}</p>
+            <div class="text-center" >
+                <h3>Model Accuracy:</h3>
+                <p>{{ visuel.accuracy }}</p>
+            </div>
+            <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Learning Curve" />
+            <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Feature Importance" />
         </div>
     </div>
 </template>
@@ -14,7 +17,6 @@ export default {
     props: ["visuel"],
     data() {
         return {
-            accuracy: null,
         };
     },
     methods: {

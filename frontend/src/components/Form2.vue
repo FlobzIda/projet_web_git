@@ -15,7 +15,6 @@
                 </v-col>
                 <v-col cols="12" md="6">
                     <v-select
-                        clearable
                         :items="availableColumnsY"
                         label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
@@ -73,26 +72,32 @@ export default {
         }
     },
     methods: {
-        submitSelection(items) {
-            this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
+        submitSelection() {
+            console.log("submitSelection(items)")
+
+            // Si la saise n'est pas bonne on ne lance pas le emit
+            if(this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0)
+                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
         },
 
+
         // Changement des valeurs des selects
-        handleInput1Change(event) {
-            console.log("handleInput1Change()")
-            this.selectedColumnsX = event;
+        handleInput1Change(newValue) {
+            //console.log("handleInput1Change()")
+            this.selectedColumnsX = newValue;
             this.validateForm();
         },
-        handleInput2Change(event) {
-            console.log("handleInput2Change()")
-            this.selectedColumnsY = event;
+        handleInput2Change(newValue) {
+            //console.log("handleInput2Change()")
+            this.selectedColumnsY = newValue;
             this.validateForm();
         },
         async validateForm() {
             console.log("validateForm()")
-            const valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
+            let valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
             this.$emit("form2ValidateEmit", valid);
         },
+
 
         // Affiche ou chache la preview
         displayPreviewFunc() {

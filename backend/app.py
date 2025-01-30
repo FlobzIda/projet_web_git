@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import os
 import uuid
 import json
+import io
+import base64
 
 
 app = Flask(__name__)
@@ -186,30 +188,55 @@ def train_model2():
     else:
         mse = mean_squared_error(y_test, y_pred)
         print(f"Mean Squared Error: {mse:.2f}")
-    print("--- fin evaluate_model")
 
-    print("--- debut plot_learning_curves ---")
-    """Trace les courbes d'apprentissage."""
-    plt.figure(figsize=(10, 6))
+    # Capture des courbes d'apprentissage en image base64
+    learning_curve_img = plot_learning_curves(evals_result)
+
+    # Capture de l'importance des caractéristiques en image base64
+    feature_importance_img = plot_feature_importance(model)
+
+    # Retourner les résultats avec les images en base64
+    return jsonify({
+        "accuracy": accuracy if is_classification else mse,
+        "learning_curve": learning_curve_img,
+        "feature_importance": feature_importance_img
+    })
+
+def plot_learning_curves(evals_result):
+    """Trace les courbes d'apprentissage et les retourne en base64."""
+    fig, ax = plt.subplots(figsize=(10, 6))
     for metric in evals_result["train"]:
-        plt.plot(evals_result["train"][metric], label=f"Train {metric}")
-        plt.plot(evals_result["test"][metric], label=f"Test {metric}")
-    plt.xlabel("Rounds")
-    plt.ylabel("Metric Value")
-    plt.title("XGBoost Training Progress")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-    print("--- fin plot_learning_curves ---")
+        ax.plot(evals_result["train"][metric], label=f"Train {metric}")
+        ax.plot(evals_result["test"][metric], label=f"Test {metric}")
+    ax.set_xlabel("Rounds")
+    ax.set_ylabel("Metric Value")
+    ax.set_title("XGBoost Training Progress")
+    ax.legend()
+    ax.grid(True)
+    
+    # Convertir le plot en image base64
+    img_io = io.BytesIO()
+    plt.savefig(img_io, format='png')
+    img_io.seek(0)
+    img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    plt.close(fig)  # Fermer la figure après la conversion
 
-    print("--- debut plot_feature_importance---")
-    xgb.plot_importance(model, importance_type="weight", max_num_features=10)
-    plt.title("Feature Importance")
-    plt.show()
-    print("--- fin plot_feature_importance")
-    gg = "ok fin ml"
-    return gg
+    return img_base64
 
+def plot_feature_importance(model):
+    """Trace l'importance des caractéristiques et les retourne en base64."""
+    fig, ax = plt.subplots(figsize=(10, 6))
+    xgb.plot_importance(model, importance_type="weight", max_num_features=10, ax=ax)
+    ax.set_title("Feature Importance")
+    
+    # Convertir le plot en image base64
+    img_io = io.BytesIO()
+    plt.savefig(img_io, format='png')
+    img_io.seek(0)
+    img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    plt.close(fig)  # Fermer la figure après la conversion
+
+    return img_base64
 
 @app.route("/api/train", methods=["POST"])
 def train_model():

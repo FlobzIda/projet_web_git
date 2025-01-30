@@ -34,7 +34,7 @@
 
         <template v-slot:item.3>
             <v-card title="Visualisation" flat>
-                <Form3 ref="form3" :visuel="dataViz"></Form3>
+                <Form3 ref="form3" :visuel="resultat"></Form3>
                 <v-col cols="12">
                     <div class="text-start">
                         <v-btn color="secondary" @click="previousStep(2)">Précédent</v-btn>
@@ -53,15 +53,15 @@ import Form3 from './Form3.vue';
 export default {
     data() {
         return {
-            activeStep: 1,
-            columns: [],
-            colX: [],
-            colY: [],
-            preview: [],
-            form1Valid: false,
-            form2Valid: false,
-            fileName: "",
-            dataViz: "",
+            activeStep: 1,      // numéro de page du stepper
+            columns: [],        // noms des colonnes
+            colX: [],           // colonnes d'entrainement
+            colY: [],           // colonne target
+            preview: [],        // visuel du tableau
+            form1Valid: false,  // formulaire 1 valide
+            form2Valid: false,  // formulaire 2 valide
+            fileName: "",       // nom du fichier
+            resultat: {},        // resultat du l'entrainement
         };
     },
     methods: {
@@ -139,7 +139,7 @@ export default {
                 }
 
                 if (response.ok) {
-                    const data = await response.json();
+                    this.resultat = await response.json();
                     console.log("Model Trained successfully:", data);
                 } else {
                     console.error("HTTP Error:", response.status);
