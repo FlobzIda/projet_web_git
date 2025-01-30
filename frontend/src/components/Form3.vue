@@ -4,18 +4,14 @@
         <div v-if="accuracy !== null">
             <h3>Model Accuracy:</h3>
             <p>{{ accuracy }}</p>
+            <p>{{ visuel }}</p>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: {
-        selectedColumns: {
-            type: Array,
-            default: () => [],
-        },
-    },
+    props: ["visuel"],
     data() {
         return {
             accuracy: null,
@@ -24,7 +20,7 @@ export default {
     methods: {
         async trainModel() {
             try {
-                const response = await fetch("http://127.0.0.1:5000/train", {
+                const response = await fetch("/api/train", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

@@ -25,7 +25,6 @@
             </v-row>
             <v-btn @click="submitSelection" items="fileName">Confirm Selection</v-btn>
         </v-container>
-        <p>{{ fileName }}</p>
     </v-form>
 </template>
 
@@ -49,7 +48,6 @@ export default {
         },
         selectedColumnsY(newVal) {
             console.log("selectedColumnsY changed:", newVal);
-            console.log(this.fileName)
             this.validateForm();
         }
     },
@@ -60,7 +58,6 @@ export default {
     },
     methods: {
         submitSelection(items) {
-            console.log('affiche le nom 2',this.fileName)
             this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.fileName);
             },
         async validateForm() {

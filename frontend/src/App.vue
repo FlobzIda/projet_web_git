@@ -31,8 +31,8 @@ export default {
     },
     async trainModel() {
       try {
-        const response = await fetch("http://127.0.0.1:5000/train", {
-          method: "POST",
+        const response = await fetch("/api/train", {
+          method: "GET",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             columnsX: this.selectedColumnsX,

@@ -10,6 +10,7 @@ import os
 import uuid
 import json
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -46,7 +47,7 @@ def save_file_mapping(original_filename, new_filename):
         json.dump(file_mappings, f, indent=4)
 
 
-@app.route("/upload", methods=["POST"])
+@app.route("/api/upload", methods=["POST"])
 def upload_file():
     if "file" not in request.files:
         app.logger.error("No file part in the request")
@@ -87,7 +88,7 @@ def upload_file():
     return jsonify({"error": "File upload failed"}), 500
 
 
-@app.route("/select_columns", methods=["POST"])
+@app.route("/api/select_columns", methods=["POST"])
 def select_columns():
     global data
     selected_columns_x = request.json["columnsX"]
@@ -102,7 +103,112 @@ def select_columns():
     return jsonify({"message": "Columns selected successfully"})
 
 
-@app.route("/train", methods=["POST"])
+@app.route("/api/trainModel", methods=["POST"])
+def trainModel():
+    data = request.get_json()  # Récupérer les données JSON du corps de la requête
+
+    file_name = data.get("filename")
+    cols_x = data.get("colsX")
+    column_x = cols_x.split(
+        ","
+    )  # Assurez-vous que colsX est une chaîne, et séparez-la en une liste
+    col_y = data.get("colY")
+    column_y = str(col_y)
+
+    print("---------------------------")
+    print("\n")
+    print(file_name, " : ", column_x, " - ", column_y)
+    print("\n")
+    print("---------------------------")
+
+    print("--- debut recuperation fichier ---")
+    # Vérifier que le fichier existe
+    try:
+        df = pd.read_csv(file_name)  # Charger le fichier CSV
+    except FileNotFoundError:
+        return jsonify({"error": "Fichier introuvable"}), 404
+    print("--- fin recuperation fichier ---")
+
+    print("--- debut select_target_column ---")
+    # Création de X et Y
+    x = df[columns_x]
+    print(column_y)
+    y = list(df[column_y])
+
+    # Détecter si le problème est une classification
+    is_classification = y.nunique() <= 10
+
+    # Encoder les classes si nécessaire
+    if is_classification and y.dtype == "object":
+        y = y.astype("category").cat.codes
+    print("--- fin select_target_column ---")
+
+    print("--- debut split_data ---")
+    X_train, X_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.2, random_state=42
+    )
+    print("--- fin split_data ---")
+
+    print("--- debut train_xgboost ---")
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtest = xgb.DMatrix(X_test, label=y_test)
+
+    params = {
+        "objective": "multi:softprob" if is_classification else "reg:squarederror",
+        "eval_metric": "mlogloss" if is_classification else "rmse",
+        "num_class": len(set(y_train)) if is_classification else None,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "n_estimators": 100,
+    }
+
+    evals_result = {}
+    model = xgb.train(
+        params,
+        dtrain,
+        num_boost_round=100,
+        evals=[(dtrain, "train"), (dtest, "test")],
+        early_stopping_rounds=10,
+        evals_result=evals_result,
+        verbose_eval=10,
+    )
+    print("--- fin train_xgboost ---")
+
+    print("--- debut evaluate_model ---")
+    y_pred = model.predict(dtest)
+    if is_classification:
+        y_pred_classes = y_pred.argmax(axis=1)
+        accuracy = accuracy_score(y_test, y_pred_classes)
+        print(f"Accuracy: {accuracy:.2f}")
+    else:
+        mse = mean_squared_error(y_test, y_pred)
+        print(f"Mean Squared Error: {mse:.2f}")
+    print("--- fin evaluate_model")
+
+    print("--- debut plot_learning_curves ---")
+    """Trace les courbes d'apprentissage."""
+    plt.figure(figsize=(10, 6))
+    for metric in evals_result["train"]:
+        plt.plot(evals_result["train"][metric], label=f"Train {metric}")
+        plt.plot(evals_result["test"][metric], label=f"Test {metric}")
+    plt.xlabel("Rounds")
+    plt.ylabel("Metric Value")
+    plt.title("XGBoost Training Progress")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    print("--- fin plot_learning_curves ---")
+
+    print("--- debut plot_feature_importance---")
+    xgb.plot_importance(model, importance_type="weight", max_num_features=10)
+    plt.title("Feature Importance")
+    plt.show()
+    print("--- fin plot_feature_importance")
+    gg = "ok fin ml"
+    return gg
+
+
+@app.route("/api/train", methods=["POST"])
 def train_model():
     global data
     selected_columns = request.json["columns"]
@@ -125,4 +231,4 @@ def train_model():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=4000)

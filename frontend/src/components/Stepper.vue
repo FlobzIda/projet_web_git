@@ -25,7 +25,7 @@
                         <v-btn color="secondary" @click="previousStep(1)">Précédent</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="validateStep(3)" v-if="form2Valid">Suivant</v-btn>
+                        <v-btn color="primary" @click="validateStep(3); submitForm()" v-if="form2Valid">Suivant</v-btn>
                     </v-col>
                 </v-row>
             </v-card>
@@ -33,7 +33,7 @@
 
         <template v-slot:item.3>
             <v-card title="Visualisation" flat>
-                <Form3 ref="form3"></Form3>
+                <Form3 ref="form3" :visuel="dataViz"></Form3>
                 <v-col cols="12">
                     <div class="text-start">
                         <v-btn color="secondary" @click="previousStep(2)">Précédent</v-btn>
@@ -54,10 +54,13 @@ export default {
         return {
             activeStep: 1,
             columns: [],
+            colX: [],
+            colY: [],
             preview: [],
             form1Valid: false,
             form2Valid: false,
             fileName: "",
+            dataViz: "",
         };
     },
     methods: {
@@ -67,8 +70,10 @@ export default {
             this.fileName = data.fileName;
         },
         async handleColumnsSelected(columnsX, columnY) {
+            this.colX = columnsX;
+            this.colY = columnY;
             try {
-                const response = await fetch("http://127.0.0.1:5000/select_columns", {
+                const response = await fetch("/api/select_columns", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -83,6 +88,7 @@ export default {
                 }
 
                 const data = await response.json();
+                this.dataViz = data;
                 console.log("Columns selected successfully:", data);
             } catch (error) {
                 console.error("Column selection failed:", error);
@@ -109,6 +115,31 @@ export default {
         fileNameEmit(isValidForm) {
             this.fileName = isValidForm
             console.log("fileNameEmit", this.fileName)
+        },
+
+        async submitForm() {
+            try {
+                const response = await fetch("/api/train", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"  // Indique que le corps est en JSON
+                },
+                body: JSON.stringify({
+                    filename: this.fileName,
+                    colsX: [this.colX],
+                    colY: [this.colY]
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Model Trained successfully:", data);
+            } else {
+                console.error("HTTP Error:", response.status);
+            }
+            } catch (error) {
+                console.error("model trained failed:", error);
+            }
         }
     },
     components: {Form1, Form2, Form3}
