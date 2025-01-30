@@ -91,8 +91,8 @@ def upload_file():
 @app.route("/api/select_columns", methods=["POST"])
 def select_columns():
     global data
-    selected_columns_x = request.json["columnsX"]
-    selected_column_y = request.json["columnY"]
+    selected_columns_x = request.json['columnsX']
+    selected_column_y = request.json['columnY']
 
     if selected_column_y not in data.columns or not all(
         col in data.columns for col in selected_columns_x

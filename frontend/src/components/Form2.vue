@@ -7,6 +7,7 @@
                     <v-select multiple clearable :items="columnsForm2"
                         label="Sélectionner les colonnes X"
                         v-model="selectedColumnsX"
+                        @update:modelValue="handleInput1Change"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
@@ -14,6 +15,7 @@
                     <v-select clearable :items="columnsForm2"
                         label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
+                        @update:modelValue="handleInput2Change"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
