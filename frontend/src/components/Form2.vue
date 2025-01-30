@@ -6,6 +6,7 @@
                     <v-select multiple clearable :items="columns"
                         label="Sélectionner les colonnes X"
                         v-model="selectedColumnsX"
+                        @update:modelValue="handleInput1Change"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
@@ -13,6 +14,7 @@
                     <v-select clearable :items="columns"
                         label="Sélectionner la colonne Y"
                         v-model="selectedColumnsY"
+                        @update:modelValue="handleInput2Change"
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
@@ -40,16 +42,16 @@ export default {
             }
         };
     },
-    watch: {
-        selectedColumnsX(newVal) {
-            console.log("selectedColumnsX changed:", newVal);
-            this.validateForm();
-        },
-        selectedColumnsY(newVal) {
-            console.log("selectedColumnsY changed:", newVal);
-            this.validateForm();
-        }
-    },
+    // watch: {
+    //     selectedColumnsX(newVal) {
+    //         console.log("selectedColumnsX changed:", newVal);
+    //         this.validateForm();
+    //     },
+    //     selectedColumnsY(newVal) {
+    //         console.log("selectedColumnsY changed:", newVal);
+    //         this.validateForm();
+    //     }
+    // },
     computed: {
         previewHeaders() {
             return this.preview.length > 0 ? Object.keys(this.preview[0]).map(key => ({ text: key, value: key })) : [];

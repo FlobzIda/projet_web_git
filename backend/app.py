@@ -81,6 +81,9 @@ def select_columns():
     selected_columns_x = request.json['columnsX']
     selected_column_y = request.json['columnY']
 
+    print(selected_column_y)
+    print(selected_columns_x)
+
     if selected_column_y not in data.columns or not all(col in data.columns for col in selected_columns_x):
         return jsonify({'error': 'Invalid column selection'}), 400
 
