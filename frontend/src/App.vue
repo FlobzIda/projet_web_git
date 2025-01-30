@@ -1,33 +1,13 @@
 <template>
 
-  <Stepper2 />
+  <Stepper />
 
-  <!--
-  <v-stepper v-model="step">
-    <v-stepper-content step="1">
-      <StepOne @uploaded="handleFileUpload" />
-      <v-btn @click="goToStep(2)" :disabled="columns.length === 0">Next</v-btn>
-    </v-stepper-content>
-
-    <v-stepper-content step="2">
-      <StepTwo :columns="columns" @selected="handleColumnsSelected" />
-      <v-btn @click="goToStep(3)"
-        :disabled="columns.length === 0 || (selectedColumnsX.length === 0 && selectedColumnsY.length === 0)">Next</v-btn>
-    </v-stepper-content>
-
-    <v-stepper-content step="3">
-      <StepThree :accuracy="accuracy" @train="trainModel" />
-    </v-stepper-content>
-  </v-stepper>-->
 </template>
 
 <script>
-import StepOne from "./components/StepOne.vue";
-import StepTwo from "./components/StepTwo.vue";
-import StepThree from "./components/StepThree.vue";
 
 
-import Stepper2 from "./components/Stepper2.vue";
+import Stepper from "./components/Stepper.vue";
 
 export default {
   data() {
@@ -69,6 +49,6 @@ export default {
       }
     },
   },
-  components: { StepOne, StepTwo, StepThree },
+  components: {Stepper},
 };
 </script>
