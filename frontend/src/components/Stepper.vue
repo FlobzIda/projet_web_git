@@ -15,7 +15,7 @@
                         <v-btn color="secondary" @click="goToStep(4)">Voir tous les modèles</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn color="primary" @click="goToStep(2)" v-if="form1Valid">Configuer</v-btn>
+                        <v-btn color="primary" @click="goToStep(2)" v-if="form1Valid">Configurer</v-btn>
                     </v-col>
                 </v-row>
             </v-card>
