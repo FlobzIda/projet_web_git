@@ -54,12 +54,13 @@
                     </div>
                 </v-col>
                 <v-col cols="12" v-if="displayPreview">
-                    <v-data-table :headers="previewHeaders" :items="preview" item-value="name" class="elevation-1"></v-data-table>
+                    <v-data-table :items="preview"
+                    item-value="name" class="elevation-1"></v-data-table>
                 </v-col>
             </v-row>
             
             <div class="text-center" >
-                <p class="text-error">{{ this.errorForm2Txt }}</p>
+                <p class="text-error">{{ errorForm2Txt }}</p>
             </div>
         </v-container>
     </v-form>
@@ -92,9 +93,6 @@ export default {
         availableColumnsY() {
             return this.columnsForm2.filter(col => !this.selectedColumnsX.includes(col));
         },
-        previewHeaders() {
-            return this.preview.length > 0 ? Object.keys(this.preview[0]).map(key => ({ text: key, value: key })) : [];
-        }
     },
     methods: {
 

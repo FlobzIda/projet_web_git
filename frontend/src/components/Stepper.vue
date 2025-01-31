@@ -139,7 +139,6 @@ export default {
                 }
 
                 const data = await response.json();
-                this.dataViz = data;
                 console.log("Columns selected successfully:", data);
                 this.trainModel()
             } catch (error) {

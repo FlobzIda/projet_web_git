@@ -14,7 +14,7 @@
                 <p>testSize : {{ visuel.testSize }}</p>
                 <p>randomState : {{ visuel.randomState }}</p>
             </div>
-            <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Learning Curve" />
+            <img :src="'data:image/png;base64,' + visuel.learning_curve" alt="Learning Curve" />
             <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Feature Importance" />
         </div>
     </div>
