@@ -9,6 +9,10 @@
             <div class="text-start">
                 <p>Colonne d'entrainement : {{ visuel.columns_x }}</p>
                 <p>Colonne cible : {{ visuel.column_y }}</p>
+                <p>max_depth : {{ visuel.max_depth }}</p>
+                <p>learning_rate: {{ visuel.learning_rate }}</p>
+                <p>testSize : {{ visuel.testSize }}</p>
+                <p>randomState : {{ visuel.randomState }}</p>
             </div>
             <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Learning Curve" />
             <img :src="'data:image/png;base64,' + visuel.feature_importance" alt="Feature Importance" />

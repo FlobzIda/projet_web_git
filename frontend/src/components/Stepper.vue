@@ -83,6 +83,10 @@ export default {
             form2Valid: false,  // formulaire 2 valide
             fileName: "",       // nom du fichier
             resultat: {},        // resultat du l'entrainement
+            randomState : 0,
+            testSize : 0,
+            learningRate : 0,
+            maxDepth : 0,
         };
     },
     methods: {
@@ -91,9 +95,13 @@ export default {
             this.preview = data.preview;
             this.fileName = data.fileName;
         },
-        async handleColumnsSelected(columnsX, columnY) {
+        async handleColumnsSelected(columnsX, columnY,randomState,testSize,learningRate,maxDepth) {
             this.colX = columnsX;
             this.colY = columnY;
+            this.randomState = randomState;
+            this.testSize = testSize;
+            this.learningRate = learningRate;
+            this.maxDepth = maxDepth;
         },
         async goToStep(nextStep) {
             this.activeStep = nextStep;
@@ -121,7 +129,7 @@ export default {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ columnsX: this.colX, columnY: this.colY })
+                    body: JSON.stringify({ columnsX: this.colX, columnY: this.colY})
                 });
 
                 if (!response.ok) {
@@ -149,7 +157,8 @@ export default {
                     body: JSON.stringify({
                         filename: this.fileName,
                         colsX: this.colX,
-                        colY: this.colY
+                        colY: this.colY,
+                        randomState: this.randomState, testSize: this.testSize, learningRate: this.learningRate,maxDepth:this.maxDepth
                     })
                 });
 

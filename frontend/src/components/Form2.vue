@@ -22,6 +22,30 @@
                         :rules="[rules.required]">
                     </v-select>
                 </v-col>
+                <v-text-field
+                    label="Saisir un randomState"
+                    type="number"
+                    v-model="randomState"
+                    @update:modelValue="changementInputRANDOM"
+                />
+                <v-select
+                label="Choisir un testSize"
+                :items="[0.1, 0.15, 0.2, 0.25, 0.3]"
+                v-model="testSize"
+                @update:modelValue="changementInputTESTSIZE"
+                />
+                <v-select
+                label="Choisir un learningRate"
+                :items="[0.1, 0.01, 0.001, 0.0001, 0.00001, 0.00000000000001]"
+                v-model="learningRate"
+                @update:modelValue="changementInputLEARNING"
+                />
+                <v-text-field
+                    label="Saisir un maxDepth"
+                    type="number"
+                    v-model="maxDepth"
+                    @update:modelValue="changementInputMAXDEPTH"
+                />
             </v-row>
             <v-row class="mb-10">
                 <v-col cols="12">
@@ -49,6 +73,10 @@ export default {
             isValid: false,
             selectedColumnsX: [],
             selectedColumnsY: [],
+            randomState : 31,   //Random state défault = 31 RPZ a la vie a la mort
+            testSize : 0.2,     //20 % de test size par défault
+            learningRate : 0.01,//0.01 de learning rate de base
+            maxDepth : 6,
             errorForm2Txt: "",
             displayPreview: false,
             displayPreviewTxt: "Afficher la preview",
@@ -76,6 +104,28 @@ export default {
             this.selectedColumnsX = newValue;
             this.validateForm();
         },
+        changementInputRANDOM(newValue) {
+            //console.log("handleInput1Change()")
+            this.randomState = newValue;
+            console.log('jessaie de changer randomstate')
+            console.log(this.randomState)
+            this.validateForm();
+        },
+        changementInputTESTSIZE(newValue) {
+            //console.log("handleInput1Change()")
+            this.testSize = newValue;
+            this.validateForm();
+        },
+        changementInputLEARNING(newValue) {
+            //console.log("handleInput1Change()")
+            this.learningRate = newValue;
+            this.validateForm();
+        },
+        changementInputMAXDEPTH(newValue) {
+            //console.log("handleInput1Change()")
+            this.maxDepth = newValue;
+            this.validateForm();
+        },
         handleInput2Change(newValue) {
             //console.log("handleInput2Change()")
             this.selectedColumnsY = newValue;
@@ -86,7 +136,7 @@ export default {
             let valid = this.selectedColumnsX.length > 0 && this.selectedColumnsY.length > 0;
             this.$emit("form2ValidateEmit", valid);
             if (valid)
-                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY, this.fileName);
+                this.$emit("selected", this.selectedColumnsX, this.selectedColumnsY,this.randomState, this.testSize, this.learningRate, this.maxDepth);
         },
 
 

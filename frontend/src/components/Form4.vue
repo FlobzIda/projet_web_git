@@ -16,6 +16,10 @@
                 <div class="pa-5">
                     <p>Colonnes X : {{ model.colX }}</p>
                     <p>Colonne Y : {{ model.colY }}</p>
+                    <p>max_depth : {{ model.resultat.max_depth }}</p>
+                    <p>learning_rate: {{ model.resultat.learning_rate }}</p>
+                    <p>testSize : {{ model.resultat.testSize }}</p>
+                    <p>randomState : {{ model.resultat.randomState }}</p>
                 </div>
             </v-card>
         </v-col>

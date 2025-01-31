@@ -92,8 +92,8 @@ def upload_file():
 @app.route("/api/select_columns", methods=["POST"])
 def select_columns():
     global data
-    selected_columns_x = request.json['columnsX']
-    selected_column_y = request.json['columnY']
+    selected_columns_x = request.json["columnsX"]
+    selected_column_y = request.json["columnY"]
 
     if selected_column_y not in data.columns or not all(
         col in data.columns for col in selected_columns_x
@@ -106,10 +106,14 @@ def select_columns():
 
 @app.route("/api/trainModel", methods=["POST"])
 def train_model2():
-    
-    file_name = request.json['filename']
-    columns_x = request.json['colsX']
-    column_y = request.json['colY']
+
+    file_name = request.json["filename"]
+    columns_x = request.json["colsX"]
+    column_y = request.json["colY"]
+    customRandomState = int(request.json["randomState"])
+    customTestSize = request.json["testSize"]
+    customLearningRate = request.json["learningRate"]
+    customMaxDepth = int(request.json["maxDepth"])
     # cols_x = request.json['colsX']
     # columns_x = cols_x.split(",")  # Assurez-vous que colsX est une chaîne, et séparez-la en une liste
     # col_y = request.json['colY']
@@ -137,18 +141,17 @@ def train_model2():
     y = df[column_y].squeeze()  # Assure que y est bien une Series
 
     # Détecter si le problème est une classification
-    is_classification = y.nunique() <= 10  
+    is_classification = y.nunique() <= 10
 
     # Encoder les classes si nécessaire
     if is_classification and y.dtype == "object":
         y = y.astype("category").cat.codes
 
-
     print("--- fin select_target_column ---")
 
     print("--- debut split_data ---")
     X_train, X_test, y_train, y_test = train_test_split(
-        x, y, test_size=0.2, random_state=18
+        x, y, test_size=customTestSize, random_state=customRandomState
     )
     print("--- fin split_data ---")
 
@@ -160,8 +163,8 @@ def train_model2():
         "objective": "multi:softprob" if is_classification else "reg:squarederror",
         "eval_metric": "mlogloss" if is_classification else "rmse",
         "num_class": len(set(y_train)) if is_classification else None,
-        "max_depth": 6,
-        "learning_rate": 0.1,
+        "max_depth": customMaxDepth,
+        "learning_rate": customLearningRate,
         "n_estimators": 100,
     }
 
@@ -194,13 +197,20 @@ def train_model2():
     feature_importance_img = plot_feature_importance(model)
 
     # Retourner les résultats avec les images en base64
-    return jsonify({
-        "accuracy": accuracy if is_classification else mse,
-        "learning_curve": learning_curve_img,
-        "feature_importance": feature_importance_img,
-        "columns_x": columns_x,
-        "column_y": column_y,
-    })
+    return jsonify(
+        {
+            "accuracy": accuracy if is_classification else mse,
+            "learning_curve": learning_curve_img,
+            "feature_importance": feature_importance_img,
+            "columns_x": columns_x,
+            "column_y": column_y,
+            "max_depth": customMaxDepth,
+            "learning_rate": customLearningRate,
+            "testSize": customTestSize,
+            "randomState": customRandomState,
+        }
+    )
+
 
 def plot_learning_curves(evals_result):
     """Trace les courbes d'apprentissage et les retourne en base64."""
@@ -213,30 +223,32 @@ def plot_learning_curves(evals_result):
     ax.set_title("XGBoost Training Progress")
     ax.legend()
     ax.grid(True)
-    
+
     # Convertir le plot en image base64
     img_io = io.BytesIO()
-    plt.savefig(img_io, format='png')
+    plt.savefig(img_io, format="png")
     img_io.seek(0)
-    img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    img_base64 = base64.b64encode(img_io.getvalue()).decode("utf-8")
     plt.close(fig)  # Fermer la figure après la conversion
 
     return img_base64
+
 
 def plot_feature_importance(model):
     """Trace l'importance des caractéristiques et les retourne en base64."""
     fig, ax = plt.subplots(figsize=(10, 6))
     xgb.plot_importance(model, importance_type="weight", max_num_features=10, ax=ax)
     ax.set_title("Feature Importance")
-    
+
     # Convertir le plot en image base64
     img_io = io.BytesIO()
-    plt.savefig(img_io, format='png')
+    plt.savefig(img_io, format="png")
     img_io.seek(0)
-    img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    img_base64 = base64.b64encode(img_io.getvalue()).decode("utf-8")
     plt.close(fig)  # Fermer la figure après la conversion
 
     return img_base64
+
 
 # @app.route("/api/train", methods=["POST"])
 # def train_model():
@@ -275,7 +287,7 @@ def save_model():
 
         # Vérifier si le fichier existe déjà
         if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 all_models = json.load(f)
         else:
             all_models = []
@@ -285,18 +297,24 @@ def save_model():
             "colX": colX,
             "colY": colY,
             "fileName": fileName,
-            "resultat": resultat
+            "resultat": resultat,
         }
         all_models.append(model_entry)
 
         # Enregistrer les données dans le fichier
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             json.dump(all_models, f, indent=4)
 
         return jsonify({"message": "Model saved successfully", "status": "success"})
 
     except Exception as e:
-        return jsonify({"message": f"Error while saving model: {str(e)}", "status": "error"}), 500
+        return (
+            jsonify(
+                {"message": f"Error while saving model: {str(e)}", "status": "error"}
+            ),
+            500,
+        )
+
 
 @app.route("/api/getModels", methods=["GET"])
 def get_models():
@@ -307,13 +325,21 @@ def get_models():
             return jsonify({"message": "No models found", "status": "error"}), 404
 
         # Lire les données du fichier
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             models_data = json.load(f)
 
         return jsonify({"models": models_data, "status": "success"})
 
     except Exception as e:
-        return jsonify({"message": f"Error while retrieving models: {str(e)}", "status": "error"}), 500
+        return (
+            jsonify(
+                {
+                    "message": f"Error while retrieving models: {str(e)}",
+                    "status": "error",
+                }
+            ),
+            500,
+        )
 
 
 if __name__ == "__main__":
