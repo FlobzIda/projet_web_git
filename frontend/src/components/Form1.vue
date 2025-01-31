@@ -49,23 +49,26 @@ export default {
         formData.append("file", this.file);
 
         try {
+            console.log("a")
             const response = await fetch("/api/upload", {
                 method: "POST",
                 body: formData,
             });
-
+            console.log("b: ", response)
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("File upload failed:", errorData);
+                console.error("File upload failed1:", errorData);
+                console.log("c")
                 return;
             }
-
+            console.log("d")
             const data = await response.json();
-            //console.log(data)
+            console.log("e")
             this.$emit("uploaded", data);
             this.$emit("form1ValidateEmit", true);
         } catch (error) {
-            console.error("File upload failed:", error);
+            console.log("f")
+            console.error("File upload failed2:", error);
         }
     },
 }

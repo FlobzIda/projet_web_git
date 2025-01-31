@@ -7,7 +7,10 @@ from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
 from xgboost import XGBClassifier
+import matplotlib
+matplotlib.use('Agg')  # Backend non interactif
 import matplotlib.pyplot as plt
+
 import os
 import uuid
 import json
@@ -24,15 +27,26 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+import shutil
 USERS_FILES_JSON = "users_files.json"
 
 if not os.path.exists(USERS_FILES_JSON):
     os.makedirs(USERS_FILES_JSON)
 
+# Vérifier si c'est un dossier et le supprimer
+if os.path.isdir(USERS_FILES_JSON):
+    shutil.rmtree(USERS_FILES_JSON)  # Supprime le dossier
+
+# Vérifier si le fichier JSON existe, sinon le créer vide
+if not os.path.exists(USERS_FILES_JSON):
+    with open(USERS_FILES_JSON, "w") as f:
+        json.dump({}, f)
+
 data = {}
 
 
 def save_file_mapping(original_filename, new_filename):
+    print('save_file_mapping')
     file_mappings = {}
 
     if os.path.getsize(USERS_FILES_JSON) > 0:
@@ -60,15 +74,24 @@ def upload_file():
         app.logger.error("No selected file")
         return jsonify({"error": "No selected file"}), 400
 
+    print("file : ", file)
     if file:
+        print(f"Fichier reçu: {file.filename}")
+
         file_extension = os.path.splitext(file.filename)[1]
         unique_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
 
-        file.save(file_path)
-        app.logger.info(f"File saved at {file_path}")
+        print(f"Chemin du fichier : {file_path}")
+
+        try:
+            file.save(file_path)
+            print(f"✅ Fichier sauvegardé avec succès !")
+        except Exception as e:
+            print(f"❌ Erreur : {e}")
 
         save_file_mapping(file.filename, unique_filename)
+        print("✅ Mapping enregistré")
 
         try:
             global data
@@ -165,7 +188,6 @@ def train_model2():
         "num_class": len(set(y_train)) if is_classification else None,
         "max_depth": customMaxDepth,
         "learning_rate": customLearningRate,
-        "n_estimators": 100,
     }
 
     evals_result = {}
